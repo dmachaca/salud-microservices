@@ -32,7 +32,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(usuario.getNombreUsuario())
-                .claim("userId", usuario.getId())
+                .claim("userId", String.valueOf(usuario.getId()))
                 .claim("roles", usuario.getUsuarioRoles().stream()
                         .map(ur -> ur.getRol().getNombre())
                         .toList())

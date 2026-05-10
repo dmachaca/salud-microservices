@@ -12,19 +12,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain security(ServerHttpSecurity http) {
-
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(ex -> ex
-
-                        // auth libre
-                        .pathMatchers("/v1/api/auth/**").permitAll()
-
-                        // swagger
-                        .pathMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-
-                        // todo lo demás protegido
-                        .anyExchange().authenticated()
+                        // Dejamos pasar TODO hacia los filtros del Gateway
+                        .anyExchange().permitAll()
                 )
                 .build();
     }
