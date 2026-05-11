@@ -53,4 +53,18 @@ public class PacienteController extends BaseController{
             return response;
         });
     }
+
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<GenericResponse> verificarExistencia(@PathVariable Long id) {
+        return handleRequest(() -> {
+            // Verificamos si el paciente existe y está activo
+            boolean existe = pacienteService.existePaciente(id);
+
+            GenericResponse response = new GenericResponse();
+            response.setSuccess(existe);
+            response.setMessage(existe ? "Paciente validado correctamente" : "El paciente no existe o está inactivo");
+
+            return response;
+        });
+    }
 }

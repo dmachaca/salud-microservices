@@ -6,6 +6,7 @@ import com.pe.den.personalservice.model.dto.response.personal.PersonalOutputDto;
 import java.util.List;
 
 public interface PersonalSaludService {
-    public PersonalOutputDto registrarPersonal(PersonalInputDto dto);
+    PersonalOutputDto registrarPersonal(PersonalInputDto dto);
     List<PersonalOutputDto> listarTodo();
+    boolean existePersonal(Long id);
 }

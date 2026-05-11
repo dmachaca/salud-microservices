@@ -55,5 +55,19 @@ public class PersonalSaludController extends BaseController{
         });
     }
 
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<GenericResponse> verificarExistencia(@PathVariable Long id) {
+        return handleRequest(() -> {
+            // Llamamos al servicio para verificar si el ID existe y está activo
+            boolean existe = personalService.existePersonal(id);
+
+            GenericResponse response = new GenericResponse();
+            response.setSuccess(existe);
+            response.setMessage(existe ? "Personal verificado correctamente" : "El personal no existe o está inactivo");
+            // No es necesario enviar data, el cliente Feign solo revisa el campo success
+            return response;
+        });
+    }
+
 
 }

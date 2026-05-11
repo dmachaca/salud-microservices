@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface PersonalSaludRepository extends JpaRepository<PersonalSalud, Long> {
     Optional<PersonalSalud> findByPersonaId(Long personaId);
+    boolean existsByIdAndActivoTrue(Long personaId);
     boolean existsByColegiatura(String colegiatura);
 }

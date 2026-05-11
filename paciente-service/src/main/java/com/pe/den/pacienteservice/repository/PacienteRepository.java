@@ -10,4 +10,5 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     @Query("SELECT p FROM Paciente p JOIN FETCH p.persona WHERE p.persona.dni = :dni")
     Optional<Paciente> findByDniWithPersona(@Param("dni") String dni);
+    boolean existsByIdAndActivoTrue(Long pacienteId);
 }

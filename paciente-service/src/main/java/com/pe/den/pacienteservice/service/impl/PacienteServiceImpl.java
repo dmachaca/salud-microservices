@@ -35,4 +35,11 @@ public class PacienteServiceImpl implements PacienteService {
                 .map(mapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existePaciente(Long id) {
+        // Usamos el repositorio para una consulta rápida por ID
+        return pacienteRepository.existsByIdAndActivoTrue(id);
+    }
 }

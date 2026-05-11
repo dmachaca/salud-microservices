@@ -63,4 +63,11 @@ public class PersonalSaludServiceImpl implements PersonalSaludService {
                 .map(p -> mapper.toResponse(p, "Nombre Externo", "DNI Externo"))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existePersonal(Long id) {
+        // Usamos el repository para una consulta rápida
+        return personalSaludRepository.existsByIdAndActivoTrue(id);
+    }
 }
