@@ -14,6 +14,8 @@ import com.pe.den.citaservice.service.CitaService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,5 +79,12 @@ public class CitaServiceImpl implements CitaService {
                 .orElseThrow(() -> new BusinessException("Cita no encontrada con ID: " + id));
 
         return citaMapper.toDto(cita);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CitaOutputDto> listarCitasPorPaciente(Long pacienteId, Pageable pageable) {
+        Page<Cita> citasPage = citaRepository.findByPacienteIdAndActivoTrue(pacienteId, pageable);
+        return citasPage.map(citaMapper::toDto);
     }
 }

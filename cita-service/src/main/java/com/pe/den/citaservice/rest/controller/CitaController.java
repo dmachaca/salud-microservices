@@ -6,6 +6,10 @@ import com.pe.den.citaservice.model.dto.response.cita.CitaOutputDto;
 import com.pe.den.citaservice.service.CitaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +66,23 @@ public class CitaController extends BaseController{
             GenericResponse response = new GenericResponse();
             response.setSuccess(true);
             response.setMessage("Cita encontrada");
+            response.setData(data);
+
+            return response;
+        });
+    }
+
+    @GetMapping("/paciente/{pacienteId}")
+    public ResponseEntity<GenericResponse> listarPorPaciente(
+            @PathVariable Long pacienteId,
+            @PageableDefault(size = 10, sort = "fechaHora", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return handleRequest(() -> {
+            Page<CitaOutputDto> data = citaService.listarCitasPorPaciente(pacienteId, pageable);
+
+            GenericResponse response = new GenericResponse();
+            response.setSuccess(true);
+            response.setMessage("Citas obtenidas con éxito");
             response.setData(data);
 
             return response;
