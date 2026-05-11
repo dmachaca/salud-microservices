@@ -1,10 +1,8 @@
 package com.pe.den.atencionservice.exception.global;
 
-import com.pe.den.atencionservice.exception.ValidationError;
-import com.pe.den.atencionservice.exception.ErrorResponse;
-import com.pe.den.atencionservice.exception.JwtAuthenticationException;
-import com.pe.den.atencionservice.exception.UsuarioException;
-import com.pe.den.atencionservice.exception.AccesoNoPermitidoException;
+import com.pe.den.atencionservice.exception.*;
+import com.pe.den.atencionservice.model.dto.response.GenericResponse;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -160,6 +158,25 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 null
         );
+    }
+
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                null
+        );
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<GenericResponse> handleFeignException(FeignException e) {
+        GenericResponse response = new GenericResponse();
+        response.setSuccess(false);
+        // Aquí puedes personalizar el mensaje si quieres
+        response.setMessage("Error de comunicación entre servicios: " + e.getMessage());
+        return ResponseEntity.status(e.status() > 0 ? e.status() : 500).body(response);
     }
 
 }

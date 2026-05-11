@@ -2,6 +2,7 @@ package com.pe.den.citaservice.service.impl;
 
 import com.pe.den.citaservice.client.PacienteClient;
 import com.pe.den.citaservice.client.PersonalClient;
+import com.pe.den.citaservice.config.auditoria.AuditoriaInterceptor;
 import com.pe.den.citaservice.exception.BusinessException;
 import com.pe.den.citaservice.model.dto.request.cita.CitaInputDTO;
 import com.pe.den.citaservice.model.dto.response.GenericResponse;
@@ -10,11 +11,14 @@ import com.pe.den.citaservice.model.entity.Cita;
 import com.pe.den.citaservice.model.mapper.CitaMapper;
 import com.pe.den.citaservice.repository.CitaRepository;
 import com.pe.den.citaservice.service.CitaService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CitaServiceImpl implements CitaService {
@@ -24,11 +28,18 @@ public class CitaServiceImpl implements CitaService {
 
     private final PersonalClient personalClient;
     private final PacienteClient pacienteClient;
+    private final AuditoriaInterceptor auditoriaInterceptor;
 
     @Override
     @Transactional
+    // Agregamos Circuit Breaker para proteger el flujo principal como son  personalClient  pacienteClient
+    @CircuitBreaker(name = "verificacion-externa-cb", fallbackMethod = "fallbackRegistrarCita")
     public CitaOutputDto registrarCita(CitaInputDTO request) {
+        // 1. IMPORTANTE: Pasamos los datos al Interceptor para que el Trigger los vea
+        // Esto hace que 'current_setting('app.user_id')' en SQL tenga valor
+        auditoriaInterceptor.setUsuarioAuditoria(request.usuarioId(), "trace-cita-" + request.pacienteId());
 
+        log.info("Validando médico {} y paciente {}", request.personalId(), request.pacienteId());
         // 1. Validar Médico (Personal-Service)
         ResponseEntity<GenericResponse> respPersonal = personalClient.verificarExistencia(request.personalId());
         if (respPersonal.getBody() == null || !respPersonal.getBody().getSuccess()) {
@@ -52,5 +63,19 @@ public class CitaServiceImpl implements CitaService {
         Cita guardada = citaRepository.save(cita);
 
         return citaMapper.toDto(guardada);
+    }
+
+    public CitaOutputDto fallbackRegistrarCita(CitaInputDTO request, Throwable t) {
+        log.error("Falla en validación externa de Citas. Motivo: {}", t.getMessage());
+        throw new BusinessException("No es posible registrar la cita: El servicio de validación (Médicos/Pacientes) no está disponible temporalmente.");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CitaOutputDto obtenerCitaPorId(Long id) {
+        Cita cita = citaRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Cita no encontrada con ID: " + id));
+
+        return citaMapper.toDto(cita);
     }
 }

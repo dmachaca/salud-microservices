@@ -12,6 +12,9 @@ public record AtencionInputDto(
         @NotNull(message = "El ID de la cita es obligatorio")
         Long citaId,
 
+        @NotNull(message = "El ID del usuario es obligatorio")
+        Long usuarioId,
+
         @Size(max = 10, message = "El código CIE10 no debe exceder los 10 caracteres")
         String diagnosticoCie10,
 

@@ -5,4 +5,5 @@ import com.pe.den.citaservice.model.dto.response.cita.CitaOutputDto;
 
 public interface CitaService {
     CitaOutputDto registrarCita(CitaInputDTO request);
+    CitaOutputDto obtenerCitaPorId(Long id);
 }

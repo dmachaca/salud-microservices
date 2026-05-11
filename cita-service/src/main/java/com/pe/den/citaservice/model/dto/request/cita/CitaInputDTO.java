@@ -21,6 +21,9 @@ public record CitaInputDTO(
         @Future(message = "La cita debe ser en una fecha futura")
         ZonedDateTime fechaHora,
 
+        @NotNull(message = "El ID del usuario que registra es obligatorio")
+        Long usuarioId,
+
         String motivo,
         String observacion
 ) {}

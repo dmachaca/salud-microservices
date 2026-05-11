@@ -53,4 +53,18 @@ public class CitaController extends BaseController{
             return response;
         });
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GenericResponse> obtenerCitaPorId(@PathVariable Long id) {
+        return handleRequest(() -> {
+            CitaOutputDto data = citaService.obtenerCitaPorId(id);
+
+            GenericResponse response = new GenericResponse();
+            response.setSuccess(true);
+            response.setMessage("Cita encontrada");
+            response.setData(data);
+
+            return response;
+        });
+    }
 }
