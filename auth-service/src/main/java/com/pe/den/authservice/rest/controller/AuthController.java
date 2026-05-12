@@ -2,12 +2,14 @@ package com.pe.den.authservice.rest.controller;
 
 import com.pe.den.authservice.model.dto.request.auth.LoginInputDto;
 import com.pe.den.authservice.model.dto.request.auth.RefreshTokenInputDto;
+import com.pe.den.authservice.model.dto.request.usuario.UsuarioInputDto;
 import com.pe.den.authservice.model.dto.response.GenericResponse;
 import com.pe.den.authservice.security.jwt.JwtService;
 import com.pe.den.authservice.security.service.SecurityService;
 
 
 import com.pe.den.authservice.service.AuthService;
+import com.pe.den.authservice.service.UsuarioService;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -22,10 +24,26 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController extends BaseController {
 
     private final AuthService authService;
-
     private final JwtService jwtService;
-
     private final SecurityService securityService;
+    private final UsuarioService usuarioService;
+
+    /*
+     * REGISTRO DE PACIENTE
+     */
+    @PostMapping("/registrar")
+    public ResponseEntity<GenericResponse> registrar(@RequestBody @Valid UsuarioInputDto request) {
+        return handleRequest(() -> {
+            var result = usuarioService.registrarPaciente(request);
+
+            GenericResponse response = new GenericResponse();
+            response.setSuccess(true);
+            response.setMessage("Paciente registrado correctamente en el sistema");
+            response.setData(result);
+
+            return response;
+        });
+    }
 
     /*
      * LOGIN
@@ -38,21 +56,11 @@ public class AuthController extends BaseController {
     ) {
 
         return handleRequest(() -> {
-
-            var result =
-                    authService.login(request);
-
-            GenericResponse response =
-                    new GenericResponse();
-
+            var result = authService.login(request);
+            GenericResponse response =  new GenericResponse();
             response.setSuccess(true);
-
-            response.setMessage(
-                    "Login exitoso"
-            );
-
+            response.setMessage( "Login exitoso" );
             response.setData(result);
-
             return response;
         });
     }

@@ -1,11 +1,11 @@
-package com.pe.den.pacienteservice.model.dto.request.paciente;
+package com.pe.den.authservice.model.dto.external;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
-
-import jakarta.validation.constraints.*;
 
 public record PacienteInputDto(
         @NotBlank(message = "El DNI es obligatorio")

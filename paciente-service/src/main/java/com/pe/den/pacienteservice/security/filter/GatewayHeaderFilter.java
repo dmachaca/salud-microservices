@@ -13,6 +13,15 @@ import java.io.IOException;
 public class GatewayHeaderFilter extends OncePerRequestFilter {
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String path = request.getServletPath();
+
+        // ENDPOINTS INTERNOS ENTRE MICROSERVICIOS
+        return path.startsWith("/v1/api/pacientes/internal/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)

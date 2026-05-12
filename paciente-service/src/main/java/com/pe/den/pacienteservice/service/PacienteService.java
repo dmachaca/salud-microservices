@@ -7,4 +7,5 @@ public interface PacienteService {
     PacienteOutputDto registrar(PacienteInputDto dto);
     PacienteOutputDto buscarPorDni(String dni);
     boolean existePaciente(Long id);
+    Long registrarPerfil(PacienteInputDto dto);
 }

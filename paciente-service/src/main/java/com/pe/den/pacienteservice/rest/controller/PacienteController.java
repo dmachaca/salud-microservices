@@ -30,6 +30,8 @@ public class PacienteController extends BaseController{
         });
     }
 
+
+    // ENDPOINT PARA EL FRONTEND
     @PostMapping("/registrar")
     public ResponseEntity<GenericResponse> registrar(@Valid @RequestBody PacienteInputDto dto) {
         return handleRequest(() -> {
@@ -40,6 +42,16 @@ public class PacienteController extends BaseController{
             response.setData(data);
             return response;
         });
+    }
+
+    /**
+     * Endpoint para COMUNICACIÓN INTERNA (Microservicios).
+     * El Auth-Service llamará a este endpoint vía Feign.
+     */
+    @PostMapping("/internal/registrar-perfil")
+    public ResponseEntity<Long> registrarPerfilInterno(@Valid @RequestBody PacienteInputDto dto) {
+        // Retornamos directamente el Long (persona_id) para facilitar la orquestación
+        return ResponseEntity.ok(pacienteService.registrarPerfil(dto));
     }
 
     @GetMapping("/dni/{dni}")
